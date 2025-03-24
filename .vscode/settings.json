@@ -59,6 +59,11 @@
         "windowsx.h": "c",
         "vulkan_platform.h": "c",
         "renderer_frontend.h": "c",
-        "logger.h": "c"
+        "iosfwd": "c",
+        "logger.h": "c",
+        "platform.h": "c",
+        "game_types.h": "c",
+        "entry.h": "c",
+        "application.h": "c"
     }
 }
