@@ -65,6 +65,10 @@
         "game_types.h": "c",
         "entry.h": "c",
         "application.h": "c",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "kmemory.h": "c",
+        "vulkan_win32.h": "c",
+        "darray.h": "c",
+        "stdlib.h": "c"
     }
 }
