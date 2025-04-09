@@ -69,6 +69,13 @@
         "kmemory.h": "c",
         "vulkan_win32.h": "c",
         "darray.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "vulkan_backend.h": "c",
+        "vulkan_swapchain.h": "c",
+        "vulkan_types.inl": "c",
+        "defines.h": "c",
+        "stdint.h": "c",
+        "intrin.h": "c",
+        "renderer_backend.h": "c"
     }
 }

@@ -98,3 +98,4 @@
  #endif
  #endif
  
+ #define KCLAMP(value,min,max)(value<=min)?min:(value>=max)?max:value;
