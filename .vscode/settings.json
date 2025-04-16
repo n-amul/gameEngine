@@ -76,6 +76,7 @@
         "defines.h": "c",
         "stdint.h": "c",
         "intrin.h": "c",
-        "renderer_backend.h": "c"
+        "renderer_backend.h": "c",
+        "vulkan_renderpass.h": "c"
     }
 }
