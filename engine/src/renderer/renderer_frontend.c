@@ -19,10 +19,10 @@
  
      if (!backend->initialize(backend, application_name, plat_state)) {
          KFATAL("Renderer backend failed to initialize. Shutting down.");
-         return FALSE;
+         return false;
      }
  
-     return TRUE;
+     return true;
  }
  
  void renderer_shutdown() {
@@ -56,9 +56,9 @@
  
          if (!result) {
              KERROR("renderer_end_frame failed. Application shutting down...");
-             return FALSE;
+             return false;
          }
      }
  
-     return TRUE;
+     return true;
  }

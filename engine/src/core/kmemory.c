@@ -15,6 +15,7 @@ typedef struct memory_stats{
 static const char* memory_tag_strings[MEMORY_TAG_MAX_TAGS] = {
     "UNKNOWN    ",
     "ARRAY      ",
+    "LINEAR_ALLC",
     "DARRAY     ",
     "DICT       ",
     "RING_QUEUE ",
@@ -47,7 +48,7 @@ void* kallocate(u64 size,memory_tag tag){
     stats.tagged_allocations[tag]+=size;    
     
     //TODO: memory alignment
-    void* block = platform_allocate(size, FALSE);
+    void* block = platform_allocate(size, false);
     platform_zero_memory(block,size);
     return block;
 }
@@ -59,7 +60,7 @@ void kfree(void* block,u64 size,memory_tag tag){
     stats.tagged_allocations[tag]-=size;    
     
     //TODO: memory alignment
-    platform_free(block,FALSE);
+    platform_free(block,false);
 }
 
 void* kzero_memory(void* block, u64 size) {
