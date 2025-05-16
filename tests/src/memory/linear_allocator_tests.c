@@ -110,7 +110,7 @@ u8 linear_allocator_multi_allocation_all_space_then_free() {
 
 void linear_allocator_register_tests() {
     test_manager_register_test(linear_allocator_should_create_and_destroy, "Linear allocator should create and destroy");
-    test_manager_register_test(linear_allocator_single_allocation_all_space, "Linear allocator single alloc for all space");
+    test_manager_register_test(linear_allocator_single_allocation_all_space, "Linear allocator single alloc for all space");//TODO: calls kfree with kmemory state not initialized.
     test_manager_register_test(linear_allocator_multi_allocation_all_space, "Linear allocator multi alloc for all space");
     test_manager_register_test(linear_allocator_multi_allocation_over_allocate, "Linear allocator try over allocate");
     test_manager_register_test(linear_allocator_multi_allocation_all_space_then_free, "Linear allocator allocated should be 0 after free_all");

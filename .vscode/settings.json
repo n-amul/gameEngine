@@ -77,6 +77,24 @@
         "stdint.h": "c",
         "intrin.h": "c",
         "renderer_backend.h": "c",
-        "vulkan_renderpass.h": "c"
+        "vulkan_renderpass.h": "c",
+        "xlocbuf": "c",
+        "ctime": "c",
+        "xlocale": "c",
+        "array": "cpp",
+        "iterator": "cpp",
+        "map": "cpp",
+        "memory": "cpp",
+        "set": "cpp",
+        "span": "cpp",
+        "vector": "cpp",
+        "xmemory": "cpp",
+        "xstring": "cpp",
+        "xtree": "cpp",
+        "kmath.h": "c",
+        "xiosbase": "c",
+        "ios": "c",
+        "math_types.h": "c",
+        "vulkan_pipeline.h": "c"
     }
 }

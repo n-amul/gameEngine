@@ -1069,13 +1069,14 @@ KINLINE vec3 mat4_down(mat4 matrix) {
  * @param matrix The matrix from which to base the vector.
  * @return A 3-component directional vector.
  */
+//TODO: check the matrix index
 KINLINE vec3 mat4_left(mat4 matrix) {
-    vec3 right;
-    right.x = -matrix.data[0];
-    right.y = -matrix.data[4];
-    right.z = -matrix.data[8];
-    vec3_normalize(&right);
-    return right;
+    vec3 left;
+    left.x = -matrix.data[0];
+    left.y = -matrix.data[4];
+    left.z = -matrix.data[8];
+    vec3_normalize(&left);
+    return left;
 }
 
 /**
@@ -1085,12 +1086,12 @@ KINLINE vec3 mat4_left(mat4 matrix) {
  * @return A 3-component directional vector.
  */
 KINLINE vec3 mat4_right(mat4 matrix) {
-    vec3 left;
-    left.x = matrix.data[0];
-    left.y = matrix.data[4];
-    left.z = matrix.data[8];
-    vec3_normalize(&left);
-    return left;
+    vec3 right;
+    right.x = matrix.data[0];
+    right.y = matrix.data[4];
+    right.z = matrix.data[8];
+    vec3_normalize(&right);
+    return right;
 }
 
 // ------------------------------------------
