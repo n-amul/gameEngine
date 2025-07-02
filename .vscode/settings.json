@@ -95,6 +95,7 @@
         "xiosbase": "c",
         "ios": "c",
         "math_types.h": "c",
-        "vulkan_pipeline.h": "c"
+        "vulkan_pipeline.h": "c",
+        "renderer_types.inl": "c"
     }
 }

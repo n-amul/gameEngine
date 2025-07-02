@@ -1,18 +1,18 @@
 #pragma once
- 
+
 #include "defines.h"
 #include "core/asserts.h"
 #include "renderer/renderer_types.inl"
- 
+
 #include <vulkan/vulkan.h>
 
-//checks the givien expression's return value against VK_SUCESS.
-#define VK_CHECK(expr)        \
-{                             \
-    KASSERT(expr==VK_SUCCESS);\
-}
+// Checks the given expression's return value against VK_SUCCESS.
+#define VK_CHECK(expr)               \
+    {                                \
+        KASSERT(expr == VK_SUCCESS); \
+    }
 
-typedef struct vulkan_buffer{
+typedef struct vulkan_buffer {
     u64 total_size;
     VkBuffer handle;
     VkBufferUsageFlagBits usage;
@@ -20,8 +20,8 @@ typedef struct vulkan_buffer{
     VkDeviceMemory memory;
     i32 memory_index;
     u32 memory_property_flags;
-}vulkan_buffer;
- 
+} vulkan_buffer;
+
 typedef struct vulkan_swapchain_support_info {
     VkSurfaceCapabilitiesKHR capabilities;
     u32 format_count;
@@ -37,44 +37,47 @@ typedef struct vulkan_device {
     i32 graphics_queue_index;
     i32 present_queue_index;
     i32 transfer_queue_index;
+
     VkQueue graphics_queue;
     VkQueue present_queue;
     VkQueue transfer_queue;
 
-    VkPhysicalDeviceProperties properties; //General information about the GPU, such as its name, driver version, and supported features.
-    VkPhysicalDeviceFeatures features; //Specific hardware capabilities that the GPU supports (for example, geometry shaders or tessellation).
-    VkPhysicalDeviceMemoryProperties memory; //Details about the types of memory the GPU has and how to access them.
-
     VkCommandPool graphics_command_pool;
+
+    VkPhysicalDeviceProperties properties;
+    VkPhysicalDeviceFeatures features;
+    VkPhysicalDeviceMemoryProperties memory;
 
     VkFormat depth_format;
 } vulkan_device;
 
 typedef struct vulkan_image {
-    VkImage handle;          // The actual image object used by Vulkan (like a GPU texture).
-    VkDeviceMemory memory;   // Memory allocated for this image.
-    VkImageView view;        // A "view" that describes how to access the image (e.g., as a 2D texture).
-    u32 width;               // Width of the image.
-    u32 height;              // Height of the image.
+    VkImage handle;
+    VkDeviceMemory memory;
+    VkImageView view;
+    u32 width;
+    u32 height;
 } vulkan_image;
 
-typedef enum vulkan_render_pass_state{
+typedef enum vulkan_render_pass_state {
     READY,
     RECORDING,
     IN_RENDER_PASS,
     RECORDING_ENDED,
     SUBMITTED,
     NOT_ALLOCATED
-}vulkan_render_pass_state;
+} vulkan_render_pass_state;
 
-typedef struct vulkan_renderpass{
+typedef struct vulkan_renderpass {
     VkRenderPass handle;
-    f32 x,y,w,h;
-    f32 r,g,b,a;
+    f32 x, y, w, h;
+    f32 r, g, b, a;
+
     f32 depth;
     u32 stencil;
+
     vulkan_render_pass_state state;
-}vulkan_renderpass;
+} vulkan_renderpass;
 
 typedef struct vulkan_framebuffer {
     VkFramebuffer handle;
@@ -84,14 +87,17 @@ typedef struct vulkan_framebuffer {
 } vulkan_framebuffer;
 
 typedef struct vulkan_swapchain {
-    VkSurfaceFormatKHR image_format;    // Format and color space of the images for displaying.
-    u8 max_frames_in_flight;            // How many frames can be processed at once.
-    VkSwapchainKHR handle;              // The actual Vulkan swapchain object.
-    u32 image_count;                    // Number of images in the swapchain.
-    VkImage* images;                    // Array of image handles.
-    VkImageView* views;                 // Array of views for those images. we access image using this.
-    vulkan_framebuffer* framebuffers;   // fb for onscreen rendering
-    vulkan_image depth_attachment;      // An image used for depth buffering (helps with 3D depth).
+    VkSurfaceFormatKHR image_format;
+    u8 max_frames_in_flight;
+    VkSwapchainKHR handle;
+    u32 image_count;
+    VkImage* images;
+    VkImageView* views;
+
+    vulkan_image depth_attachment;
+
+    // framebuffers used for on-screen rendering.
+    vulkan_framebuffer* framebuffers;
 } vulkan_swapchain;
 
 typedef enum vulkan_command_buffer_state {
@@ -127,23 +133,69 @@ typedef struct vulkan_pipeline {
 } vulkan_pipeline;
 
 #define OBJECT_SHADER_STAGE_COUNT 2
+
+typedef struct vulkan_descriptor_state {
+    // One per frame
+    u32 generations[3];
+} vulkan_descriptor_state;
+
+#define VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT 2
+typedef struct vulkan_object_shader_object_state {
+    // Per frame
+    VkDescriptorSet descriptor_sets[3];
+
+    // Per descriptor
+    vulkan_descriptor_state descriptor_states[VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT];
+} vulkan_object_shader_object_state;
+
+// Max number of objects
+#define VULKAN_OBJECT_MAX_OBJECT_COUNT 1024
+
 typedef struct vulkan_object_shader {
     // vertex, fragment
-    vulkan_shader_stage stages[OBJECT_SHADER_STAGE_COUNT];  
-    vulkan_pipeline pipeline;
-    //global uniform buffer object.
+    vulkan_shader_stage stages[OBJECT_SHADER_STAGE_COUNT];
+
+    VkDescriptorPool global_descriptor_pool;
+    VkDescriptorSetLayout global_descriptor_set_layout;
+
+    // One descriptor set per frame - max 3 for triple-buffering.
+    VkDescriptorSet global_descriptor_sets[3];
+
+    // Global uniform object.
     global_uniform_object global_ubo;
- 
-}vulkan_object_shader;
+
+    // Global uniform buffer.
+    vulkan_buffer global_uniform_buffer;
+
+    VkDescriptorPool object_descriptor_pool;
+    VkDescriptorSetLayout object_descriptor_set_layout;
+    // Object uniform buffers.
+    vulkan_buffer object_uniform_buffer;
+    // TODO: manage a free list of some kind here instead.
+    u32 object_uniform_buffer_index;
+
+    // TODO: make dynamic
+    vulkan_object_shader_object_state object_states[VULKAN_OBJECT_MAX_OBJECT_COUNT];
+
+    vulkan_pipeline pipeline;
+
+} vulkan_object_shader;
 
 typedef struct vulkan_context {
-    //framebuffer current width height
+    f32 frame_delta_time;
+
+    // The framebuffer's current width.
     u32 framebuffer_width;
+
+    // The framebuffer's current height.
     u32 framebuffer_height;
 
-    //current generation of framebuffer size
-    //if last one doesnt match, new one should be generated
+    // Current generation of framebuffer size. If it does not match framebuffer_size_last_generation,
+    // a new one should be generated.
     u64 framebuffer_size_generation;
+
+    // The generation of the framebuffer when it was last created. Set to framebuffer_size_generation
+    // when updated.
     u64 framebuffer_size_last_generation;
 
     VkInstance instance;
@@ -153,29 +205,29 @@ typedef struct vulkan_context {
 #if defined(_DEBUG)
     VkDebugUtilsMessengerEXT debug_messenger;
 #endif
-    //vulkan_device device;
+
     vulkan_device device;
+
     vulkan_swapchain swapchain;
     vulkan_renderpass main_renderpass;
-
 
     vulkan_buffer object_vertex_buffer;
     vulkan_buffer object_index_buffer;
 
     // darray
     vulkan_command_buffer* graphics_command_buffers;
-    // darray 
-    //  tells the presentation queue an image from the swapchain is ready to be drawn to
-    VkSemaphore* image_available_semaphores;
+
     // darray
-    //Signal when rendering is done
+    VkSemaphore* image_available_semaphores;
+
+    // darray
     VkSemaphore* queue_complete_semaphores;
 
     u32 in_flight_fence_count;
-    vulkan_fence* in_flight_fences;	//CPU waits until GPU finish its work (CPU ↔ GPU sync)
+    vulkan_fence* in_flight_fences;
+
     // Holds pointers to fences which exist and are owned elsewhere.
-    vulkan_fence** images_in_flight; 
-    //Tracks which fence is using which swapchain image (A checklist that says, "Is this image still busy? If yes, wait.")
+    vulkan_fence** images_in_flight;
 
     u32 image_index;
     u32 current_frame;
@@ -186,7 +238,12 @@ typedef struct vulkan_context {
 
     u64 geometry_vertex_offset;
     u64 geometry_index_offset;
-    
-    i32 (*find_memory_index)(u32 type_filter,u32 property_flags);
-}vulkan_context;
 
+    i32 (*find_memory_index)(u32 type_filter, u32 property_flags);
+
+} vulkan_context;
+
+typedef struct vulkan_texture_data {
+    vulkan_image image;
+    VkSampler sampler;
+} vulkan_texture_data;
